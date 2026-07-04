@@ -290,10 +290,11 @@ textarea.a-input{resize:vertical;line-height:1.8}
 }
 #msgtext{flex:1;white-space:pre-wrap;font-size:15px;line-height:1.95;letter-spacing:.02em}
 
-/* メッセージ窓の上をあるくドット絵キャラ（さわると はなしかけてくる） */
+/* メッセージ窓の上で つりをする ドット絵キャラ（さわると はなしかけてくる）
+   キャンバス20x44px：上がキャラ、下へ つりいとが 窓のまえに たれる */
 #chara{
-  position:absolute;left:16px;bottom:134px;z-index:55;
-  width:48px;height:54px;
+  position:absolute;left:16px;bottom:56px;z-index:55;
+  width:60px;height:132px;
   image-rendering:pixelated;pointer-events:auto;cursor:pointer;display:none;
 }
 #msgnext{
@@ -459,8 +460,8 @@ textarea.a-input{resize:vertical;line-height:1.8}
     <span id="msgnext">▼</span>
   </div>
 
-  <!-- メッセージ窓の上をあるくキャラ -->
-  <canvas id="chara" width="16" height="18"></canvas>
+  <!-- メッセージ窓の上で つりをするキャラ -->
+  <canvas id="chara" width="20" height="44"></canvas>
 
   <!-- タイトル画面 -->
   <div id="title">
@@ -775,71 +776,96 @@ textarea.a-input{resize:vertical;line-height:1.8}
       '....kk..kk......'
     ]
   ];
-  function charaDraw(fi){
-    var rows = CH_FRAMES[fi];
-    cctx.clearRect(0, 0, 16, 18);
+  /* つりあげるもの（ページ遷移のたびに ランダム） */
+  var CATCHES = [
+    { c: '#9fe8ff', kind: 'fish' },  /* さかな */
+    { c: '#ffd76a', kind: 'fish' },  /* きんいろのさかな */
+    { c: '#ff9db0', kind: 'fish' },  /* たい？ */
+    { c: '#8a5a2a', kind: 'boot' },  /* ながぐつ */
+    { c: '#9aa4b2', kind: 'can' }    /* あきかん */
+  ];
+  function px(x, y, c){ cctx.fillStyle = c; cctx.fillRect(x, y, 1, 1); }
+  function drawBody(rows){
     for (var y = 0; y < rows.length; y++){
       for (var x = 0; x < 16; x++){
         var c = rows[y].charAt(x);
-        if (CH_PAL[c]){ cctx.fillStyle = CH_PAL[c]; cctx.fillRect(x, y, 1, 1); }
+        if (CH_PAL[c]){ px(x, y, CH_PAL[c]); }
       }
     }
   }
+  var ROD = '#8a5a2a', LINE = '#cfd8e0', BOB = '#e5484d', BANG = '#ffd76a';
+  function charaDraw(opt){
+    cctx.clearRect(0, 0, 20, 44);
+    if (opt.walk !== undefined){
+      drawBody(CH_FRAMES[opt.walk]);
+      return;
+    }
+    drawBody(CH_FRAMES[1]); /* たちポーズ */
+    if (opt.rod === 'down'){
+      /* つりざお（ななめ右上へ）→ いとが 窓のまえに たれる */
+      px(12, 11, ROD); px(13, 10, ROD); px(14, 9, ROD); px(15, 8, ROD);
+      px(16, 7, ROD); px(17, 6, ROD); px(18, 5, ROD);
+      var end = 30 + (opt.bob || 0);
+      for (var y = 6; y <= end; y++) px(18, y, LINE);
+      px(18, end + 1, BOB); px(17, end + 1, BOB); /* うき */
+    } else if (opt.rod === 'up'){
+      /* あわせ！ さおを たてて つりあげた */
+      px(12, 10, ROD); px(13, 8, ROD); px(14, 6, ROD); px(15, 4, ROD); px(15, 2, ROD);
+      px(16, 3, LINE); px(16, 4, LINE); px(16, 5, LINE); px(16, 6, LINE);
+      var it = opt.item || CATCHES[0];
+      if (it.kind === 'fish'){
+        px(15, 7, it.c); px(16, 7, it.c); px(17, 7, it.c);
+        px(16, 8, it.c); px(18, 8, it.c);
+        px(15, 8, '#10131c');
+      } else if (it.kind === 'boot'){
+        px(16, 7, it.c); px(16, 8, it.c); px(15, 9, it.c); px(16, 9, it.c); px(17, 9, it.c);
+      } else {
+        px(15, 7, it.c); px(16, 7, it.c); px(15, 8, it.c); px(16, 8, it.c); px(15, 9, it.c); px(16, 9, it.c);
+      }
+      /* びっくりマーク */
+      px(1, 0, BANG); px(1, 1, BANG); px(1, 2, BANG); px(1, 4, BANG);
+    }
+  }
   var CH_HOME = 16;
-  var ch = { mode: 'hidden', x: CH_HOME, dir: 1, tick: 0, pauseUntil: 0, hopUntil: 0 };
+  var ch = { mode: 'hidden', x: CH_HOME, dir: 1, tick: 0, hopUntil: 0, item: null };
 
   /* さわると はなしかけてくる（セリフは CONTENT.talk） */
   chara.addEventListener('click', function(e){
     e.stopPropagation();
-    if (ch.mode !== 'pace') return;          /* はしっている最中は そっとしておく */
+    if (ch.mode !== 'fish') return;          /* つりに しゅうちゅうしてない時は そっとしておく */
     if (typing || lineQueue.length) return;  /* だいじな はなしの途中は わりこまない */
     sndTalk(); vibrate();
     ch.hopUntil = Date.now() + 240;          /* ぴょん */
-    ch.pauseUntil = Date.now() + 2800;       /* 立ち止まって はなす */
     var quip = CONTENT.talk[Math.floor(Math.random() * CONTENT.talk.length)];
     var restore = lastChoices;
     say([quip], function(){ if (restore) showChoices(restore); });
   });
-  function charaEnter(){ /* 左から はしってくる */
+  function charaEnter(){ /* 左から あるいてきて つりを はじめる */
     chara.style.display = 'block';
-    ch.x = -50; ch.dir = 1; ch.mode = 'enter';
+    ch.x = -60; ch.dir = 1; ch.mode = 'enter';
   }
-  function charaExit(){ /* 右へ はしりさる */
+  function charaExit(){ /* ページ遷移＝なにかが つれた！ */
     if (ch.mode === 'hidden') return;
-    ch.mode = 'exit'; ch.dir = 1;
+    ch.mode = 'catch';
+    ch.item = CATCHES[Math.floor(Math.random() * CATCHES.length)];
+    ch.hopUntil = Date.now() + 240; /* あわせの ぴょん */
   }
   setInterval(function(){
     if (ch.mode === 'hidden') return;
     ch.tick++;
-    var stageW = stageEl.clientWidth;
-    if (ch.mode === 'pace'){ /* 窓の上を のんびり うろうろ */
-      if (Date.now() < ch.pauseUntil){
-        charaDraw(1);
-      } else {
-        ch.x += ch.dir * 1.5;
-        var maxX = Math.min(150, stageW * 0.45);
-        if (ch.x <= 10){
-          ch.x = 10; ch.dir = 1;
-          if (Math.random() < 0.4) ch.pauseUntil = Date.now() + 1200 + Math.random() * 1800;
-        } else if (ch.x >= maxX){
-          ch.x = maxX; ch.dir = -1;
-          if (Math.random() < 0.4) ch.pauseUntil = Date.now() + 1200 + Math.random() * 1800;
-        }
-        charaDraw((ch.tick >> 1) & 1);
-      }
-    } else if (ch.mode === 'exit'){
-      ch.dir = 1; ch.x += 16;
-      charaDraw(ch.tick & 1);
-      if (ch.x > stageW + 50) ch.mode = 'away';
+    if (ch.mode === 'fish'){ /* 窓のうえで のんびり つり（うきが ゆれる） */
+      charaDraw({ rod: 'down', bob: Math.round(Math.sin(ch.tick * 0.32) * 2) });
+    } else if (ch.mode === 'catch'){ /* なにかを つりあげた！ */
+      charaDraw({ rod: 'up', item: ch.item });
     } else if (ch.mode === 'enter'){
       ch.dir = 1; ch.x += 12;
-      charaDraw(ch.tick & 1);
-      if (ch.x >= CH_HOME){ ch.x = CH_HOME; ch.mode = 'pace'; }
+      charaDraw({ walk: ch.tick & 1 });
+      if (ch.x >= CH_HOME){ ch.x = CH_HOME; ch.mode = 'fish'; }
     } else {
-      charaDraw(1);
+      charaDraw({ rod: 'down', bob: 0 });
     }
     chara.style.left = ch.x + 'px';
-    var hop = Date.now() < ch.hopUntil ? ' translateY(-8px)' : '';
+    var hop = Date.now() < ch.hopUntil ? ' translateY(-6px)' : '';
     chara.style.transform = (ch.dir < 0 ? 'scaleX(-1)' : '') + hop;
   }, 110);
 
@@ -1297,10 +1323,10 @@ textarea.a-input{resize:vertical;line-height:1.8}
   }
 
   function go(name){
-    charaExit(); /* 右へ はしりさる */
+    charaExit(); /* なにかが つれた！（あわせ演出） */
     playWipe(function(){
       SCENES[name].enter();
-      charaEnter(); /* 左から もどってくる */
+      charaEnter(); /* 左から あるいてきて つりを 再開 */
     });
   }
 
