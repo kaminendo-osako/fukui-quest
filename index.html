@@ -291,10 +291,10 @@ textarea.a-input{resize:vertical;line-height:1.8}
 #msgtext{flex:1;white-space:pre-wrap;font-size:15px;line-height:1.95;letter-spacing:.02em}
 
 /* メッセージ窓の上で つりをする ドット絵キャラ（さわると はなしかけてくる）
-   キャンバス20x44px：上がキャラ、下へ つりいとが 窓のまえに たれる */
+   キャンバス20x24px：つりいとは 窓の1行目の少し上まで */
 #chara{
-  position:absolute;left:16px;bottom:56px;z-index:55;
-  width:60px;height:132px;
+  position:absolute;left:16px;bottom:116px;z-index:55;
+  width:60px;height:72px;
   image-rendering:pixelated;pointer-events:auto;cursor:pointer;display:none;
 }
 #msgnext{
@@ -331,7 +331,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
       <div style="margin-top:8px">
         <div class="st-line"><span class="k">とくぎ</span><span>えいぎょう／公式LINE</span></div>
         <div class="st-line"><span class="k">しょうごう</span><span class="gold">げんばで信頼をきずく男</span></div>
-        <div class="st-line"><span class="k">しゅっしん</span><span>長野県（二児の父）</span></div>
+        <div class="st-line"><span class="k">しゅっしん</span><span>長野県伊那市（二児の父）</span></div>
       </div>
     </div>
     <div class="win">
@@ -438,12 +438,12 @@ textarea.a-input{resize:vertical;line-height:1.8}
     <div class="win">
       <span class="cap">これまでの ぼうけん</span>
       <ul class="years">
-        <li><span class="y">1994</span><span>東京都世田谷区に 爆誕</span></li>
-        <li><span class="y">2012</span><span>東京農業大学第一高校 卒業</span></li>
-        <li><span class="y">2016</span><span>日本大学 卒業 → 三井住友海上あいおい生命 入社</span></li>
-        <li><span class="y">2024</span><span>8年つとめて 退社。不動産・M&amp;A会社で 買収企業の経営を 経験</span></li>
-        <li><span class="y">その後</span><span>株式会社DiteA 代表取締役に。美容アプリ『BEAUTY MATCH』会員1万人を 達成</span></li>
-        <li><span class="y">いま</span><span>株式会社かみねんど 代表として ぼうけんちゅう！</span></li>
+        <li><span class="y">1992</span><span>長野県伊那市に 爆誕</span></li>
+        <li><span class="y">高校まで</span><span>長野県で すごす</span></li>
+        <li><span class="y">21歳</span><span>釣具専門店を 起業（長野・愛知・岡山を 拠点に）</span></li>
+        <li><span class="y">24歳</span><span>3年で 県下売上2位規模の店舗に 成長させる</span></li>
+        <li><span class="y">その後</span><span>東京でITフリーランス営業。最大1件2,000万円の契約・上半期売上1位。佐川急便では 最優秀社員候補に 選出</span></li>
+        <li><span class="y">いま</span><span>株式会社かみねんど 執行役員として ぼうけんちゅう！</span></li>
       </ul>
     </div>
   </div>
@@ -461,7 +461,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
   </div>
 
   <!-- メッセージ窓の上で つりをするキャラ -->
-  <canvas id="chara" width="20" height="44"></canvas>
+  <canvas id="chara" width="20" height="24"></canvas>
 
   <!-- タイトル画面 -->
   <div id="title">
@@ -616,7 +616,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
       '＊わっ！ びっくりした！',
       '＊エンジン音を きけば 車種が わかるぞ。\nこんど ためしてみてくれ。',
       '＊こどもたちが かわいくて しかたない。',
-      '＊りゅうた（代表）とは 上野の居酒屋いらい\n5年来の しんゆうだ。',
+      '＊兄さん（代表の大迫）とは 上野の居酒屋いらい\n5年来の しんゆうだ。',
       '＊はなしかたは すこし ぶきようだが、\nおもいは 人一倍だ。',
       '＊ポンコツエピソードは ありすぎるから\nあったときに きいてくれ。さけがあれば 一晩中だ。',
       '＊公式LINEへの ねついなら だれにも まけない。'
@@ -630,8 +630,8 @@ textarea.a-input{resize:vertical;line-height:1.8}
       'きょうも げんばで しんらいを つみあげる。'
     ],
     himitsu: [
-      '代表の大迫とは 上野のさびれた居酒屋で 出会った（5年来の親友）',
-      'コロナ禍は 大迫とFPSざんまい。味方を盾にして 一人だけ逃げ切ったことがある',
+      '兄さん（代表の大迫）とは 上野のさびれた居酒屋で 出会った（5年来の親友）',
+      'コロナ禍は 兄さんとFPSざんまい。味方を盾にして 一人だけ逃げ切ったことがある',
       'ポンコツエピソードは「ありすぎるので 直接会ったときに。お酒があれば一晩中」',
       '二児の父。こどもたちが かわいくて しかたがない',
       '「福井さん個人を信頼して 仕事をお願いしたい」と言われるのが いちばんうれしい'
@@ -795,7 +795,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
   }
   var ROD = '#8a5a2a', LINE = '#cfd8e0', BOB = '#e5484d', BANG = '#ffd76a';
   function charaDraw(opt){
-    cctx.clearRect(0, 0, 20, 44);
+    cctx.clearRect(0, 0, 20, 24);
     if (opt.walk !== undefined){
       drawBody(CH_FRAMES[opt.walk]);
       return;
@@ -805,7 +805,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
       /* つりざお（ななめ右上へ）→ いとが 窓のまえに たれる */
       px(12, 11, ROD); px(13, 10, ROD); px(14, 9, ROD); px(15, 8, ROD);
       px(16, 7, ROD); px(17, 6, ROD); px(18, 5, ROD);
-      var end = 30 + (opt.bob || 0);
+      var end = 19 + (opt.bob || 0); /* 窓の1行目の少し上で とどめる */
       for (var y = 6; y <= end; y++) px(18, y, LINE);
       px(18, end + 1, BOB); px(17, end + 1, BOB); /* うき */
     } else if (opt.rod === 'up'){
@@ -832,10 +832,10 @@ textarea.a-input{resize:vertical;line-height:1.8}
   /* さわると はなしかけてくる（セリフは CONTENT.talk） */
   chara.addEventListener('click', function(e){
     e.stopPropagation();
-    if (ch.mode !== 'fish') return;          /* つりに しゅうちゅうしてない時は そっとしておく */
-    if (typing || lineQueue.length) return;  /* だいじな はなしの途中は わりこまない */
     sndTalk(); vibrate();
-    ch.hopUntil = Date.now() + 240;          /* ぴょん */
+    ch.hopUntil = Date.now() + 240;          /* どんな時でも ぴょんと反応する */
+    if (ch.mode !== 'fish') return;          /* つり中いがいは しゃべらない */
+    if (typing || lineQueue.length) return;  /* だいじな はなしの途中は わりこまない */
     var quip = CONTENT.talk[Math.floor(Math.random() * CONTENT.talk.length)];
     var restore = lastChoices;
     say([quip], function(){ if (restore) showChoices(restore); });
@@ -854,7 +854,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
     if (ch.mode === 'hidden') return;
     ch.tick++;
     if (ch.mode === 'fish'){ /* 窓のうえで のんびり つり（うきが ゆれる） */
-      charaDraw({ rod: 'down', bob: Math.round(Math.sin(ch.tick * 0.32) * 2) });
+      charaDraw({ rod: 'down', bob: Math.round(Math.sin(ch.tick * 0.32) * 1.2) });
     } else if (ch.mode === 'catch'){ /* なにかを つりあげた！ */
       charaDraw({ rod: 'up', item: ch.item });
     } else if (ch.mode === 'enter'){
@@ -1047,7 +1047,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
         say(['＊フクイの「つよさ」を ひらいた！'], function(){
           showChoices([
             { t: 'しごとを そうだんする', f: function(){ go('hanasu'); } },
-            { t: 'だいひょうの RYU QUESTを みる', href: LINK.ryu },
+            { t: '兄さんの RYU QUESTを みる', href: LINK.ryu },
             backChoice()
           ]);
         });
@@ -1089,7 +1089,7 @@ textarea.a-input{resize:vertical;line-height:1.8}
           showChoices([
             { t: 'かみねんどWebサイト <small>' + tail(LINK.web) + '</small>', href: LINK.web },
             { t: 'かいしゃの公式LINE <small>' + tail(LINK.line) + '</small>', href: LINK.line },
-            { t: 'だいひょうの RYU QUEST <small>osako</small>', href: LINK.ryu },
+            { t: '兄さんの RYU QUEST <small>osako</small>', href: LINK.ryu },
             backChoice()
           ]);
         });
